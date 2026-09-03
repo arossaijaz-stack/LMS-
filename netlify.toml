@@ -15,6 +15,19 @@
 
 [functions]
   node_bundler = "esbuild"
+  # NestJS core internally references @nestjs/microservices and
+  # @nestjs/websockets via dynamic require() calls, used only if you
+  # actually enable microservices/websocket gateways - which this app
+  # doesn't. Those packages are intentionally NOT installed (no need
+  # for them), but esbuild tries to statically resolve every require()
+  # at bundle time regardless, including NestJS's internal optional
+  # ones, and fails since the packages aren't present. Marking them
+  # external tells esbuild to leave those require() calls alone rather
+  # than bundling them - NestJS's own code already handles the case
+  # where they're absent at runtime (this is a well-documented
+  # NestJS + esbuild + serverless deployment gotcha, not specific to
+  # this project).
+  external_node_modules = ["@nestjs/microservices", "@nestjs/websockets"]
   # Prisma's query engine binary must ship WITH the function bundle,
   # or the function fails at runtime with a "query engine not found"
   # error (the same class of issue this project's own sandbox hit
