@@ -156,7 +156,13 @@ describe('QuizzesService — access gating', () => {
     prisma.lesson.findUnique.mockResolvedValue(null);
 
     const result = await service.getQuizForStudent('quiz-1', STUDENT);
-    const optionKeys = Object.keys(result.questions[0].options[0]);
+    // Cast to `any` here deliberately — `options` is typed loosely
+    // (Prisma's Json field) at the type level, but we know the exact
+    // runtime shape from the mock above. This mirrors the same
+    // "real Prisma types are stricter than the sandbox mock" class of
+    // issue fixed in support.service.ts — caught only once a real
+    // build environment ran the full type-check.
+    const optionKeys = Object.keys((result.questions[0].options as any)[0]);
     expect(optionKeys).not.toContain('isCorrect');
   });
 });

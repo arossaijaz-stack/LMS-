@@ -8,7 +8,15 @@ interface RequestUser {
   role: UserRole;
 }
 
-const STAFF_ROLES = [UserRole.ADMIN, UserRole.SUPPORT];
+// Explicitly typed as UserRole[] (not inferred as a narrow literal
+// union) — otherwise TypeScript's strict array .includes() typing
+// rejects passing the full UserRole type (user.role) against an array
+// inferred to only contain ADMIN | SUPPORT. This didn't surface during
+// development because the sandboxed environment couldn't generate the
+// real Prisma client/enum types (see every backend phase's testing
+// notes) — it only showed up once a real CI/build environment with
+// working Prisma generation ran a full type-check.
+const STAFF_ROLES: UserRole[] = [UserRole.ADMIN, UserRole.SUPPORT];
 
 @Injectable()
 export class SupportService {
