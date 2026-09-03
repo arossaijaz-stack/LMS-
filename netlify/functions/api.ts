@@ -27,7 +27,23 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 const express = require('express');
 import helmet from 'helmet';
-import { AppModule } from '../../src/app.module';
+// IMPORTANT: import from the compiled dist/ output, NOT from
+// TypeScript source (../../src/app.module). This was the actual
+// cause of a "Cannot read properties of undefined (reading 'get')"
+// boot-time crash: Netlify's esbuild-based function bundler compiles
+// any .ts file it's given directly, but esbuild does NOT implement
+// TypeScript's emitDecoratorMetadata option, which NestJS's
+// dependency injection relies on to know a constructor parameter's
+// type (e.g. that JwtAccessStrategy's `config` parameter should
+// receive a ConfigService). Without that metadata, Nest can't resolve
+// the injection and passes undefined, so any constructor that calls
+// config.get(...) synchronously (see the Passport strategies) fails
+// immediately at bootstrap. Importing the already-tsc-compiled dist/
+// output instead means the metadata is already baked in as real
+// executable JS (__metadata(...) calls) by the time esbuild touches
+// it, so esbuild is just bundling plain JavaScript, not
+// re-transforming TypeScript, and nothing gets stripped.
+import { AppModule } from '../../dist/app.module';
 
 let cachedHandler: ReturnType<typeof serverless> | null = null;
 
