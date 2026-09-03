@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+build/
+
+# Environment variables — NEVER commit real secrets.
+# Only .env.example (with placeholder values) should be tracked.
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Prisma generated client (regenerated on install via postinstall)
+node_modules/.prisma/
