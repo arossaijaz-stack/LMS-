@@ -13,6 +13,18 @@
   functions = "netlify/functions"
   publish = "dist"
 
+[build.environment]
+  # NODE_ENV=production is intentionally set as a runtime env var (see
+  # PaymentProviderService, which checks it to fail closed on
+  # unverified webhooks in production). Its side effect: npm's default
+  # behavior is to SKIP devDependencies entirely when NODE_ENV=production
+  # during npm install -- which broke the build, since @nestjs/cli
+  # (needed for "nest build") and TypeScript itself both live in
+  # devDependencies. This flag forces devDependencies to install
+  # regardless, fixing the build without having to stop setting
+  # NODE_ENV=production for the actual deployed function.
+  NPM_FLAGS = "--include=dev"
+
 [functions]
   node_bundler = "esbuild"
   # NestJS core internally references @nestjs/microservices and
