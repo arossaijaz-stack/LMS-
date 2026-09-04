@@ -2,11 +2,11 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserRole } from '@prisma/client';
 
-jest.mock('bcrypt', () => ({
+jest.mock('bcryptjs', () => ({
   hash: jest.fn().mockResolvedValue('hashed-password'),
   compare: jest.fn(),
 }));
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 function buildService() {
   const prisma = {

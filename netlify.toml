@@ -9,20 +9,20 @@
 # own environment variables configured in the Netlify dashboard.
 
 [build]
-  command = "npm install && npx prisma generate && npm run build"
+  # --include=dev is now belt-and-suspenders redundant with moving
+  # @nestjs/cli, typescript, and prisma to regular "dependencies" in
+  # package.json (which ALWAYS install regardless of NODE_ENV) -- but
+  # kept here too as an explicit, direct flag on the exact npm install
+  # command actually being run, rather than relying on the NPM_FLAGS
+  # env var (which turned out NOT to apply to a custom build.command's
+  # own npm install call -- it only affects Netlify's own implicit
+  # dependency-install step, a distinct build phase we bypass entirely
+  # by writing our own npm install here).
+  command = "npm install --include=dev && npx prisma generate && npm run build"
   functions = "netlify/functions"
   publish = "dist"
 
 [build.environment]
-  # NODE_ENV=production is intentionally set as a runtime env var (see
-  # PaymentProviderService, which checks it to fail closed on
-  # unverified webhooks in production). Its side effect: npm's default
-  # behavior is to SKIP devDependencies entirely when NODE_ENV=production
-  # during npm install -- which broke the build, since @nestjs/cli
-  # (needed for "nest build") and TypeScript itself both live in
-  # devDependencies. This flag forces devDependencies to install
-  # regardless, fixing the build without having to stop setting
-  # NODE_ENV=production for the actual deployed function.
   NPM_FLAGS = "--include=dev"
 
 [functions]

@@ -1,5 +1,5 @@
 import { PrismaClient, UserRole } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs'; // pure JS, no native binary — see auth.service.ts comment
 
 const prisma = new PrismaClient();
 

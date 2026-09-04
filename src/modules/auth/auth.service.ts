@@ -6,8 +6,15 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserRole } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+// bcryptjs (pure JavaScript, no native binary) rather than bcrypt --
+// bcrypt requires a compiled C++ addon matched to the exact deployment
+// OS/architecture, which is a well-known source of failures in
+// serverless/bundled environments (esbuild can't bundle native .node
+// binaries the way it bundles JS). bcryptjs has the same async API
+// (hash/compare), just implemented in pure JS, so this was a drop-in
+// swap with no logic changes needed elsewhere in this file.
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto, CreateStaffUserDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
