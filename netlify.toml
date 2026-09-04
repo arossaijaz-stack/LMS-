@@ -46,6 +46,16 @@
   # repeatedly during development - see PHASE3-README.md).
   included_files = ["node_modules/.prisma/**", "node_modules/@prisma/client/**"]
 
+# This repository deploys the LMS backend only -- there is no static
+# frontend page at the site root yet (see the Frontend Phase 1 README
+# for what exists so far: homepage/login/register, not deployed here).
+# Send root visitors to the public API liveness endpoint instead of
+# showing Netlify's generic 404 page.
+[[redirects]]
+  from = "/"
+  to = "/api/health"
+  status = 302
+
 # Routes every /api/* request to the single bundled function.
 [[redirects]]
   from = "/api/*"
